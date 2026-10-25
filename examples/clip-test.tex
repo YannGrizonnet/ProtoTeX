@@ -1,0 +1,20 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=12mm]{geometry}
+\usepackage{prototex}
+\pagestyle{empty}
+\begin{document}
+% Red and blue blocks deliberately extend outside the card corners.
+% Neither must appear outside the rounded silhouette.
+\ProtoSetup{corner-radius=4,width=63,height=88,rows=12,padding=0}
+\ProtoLayout{image-from=1,image-to=12,description-from=10}
+\ProtoCard[
+  title={},
+  image={example-image-a},
+  description={},
+  overlay={
+    \fill[red] (-4,-4) rectangle (15,15);
+    \fill[blue] (48,75) rectangle (67,92);
+    \ProtoBand[row=2,fill=black!70]{Carte test}
+  }
+]
+\end{document}

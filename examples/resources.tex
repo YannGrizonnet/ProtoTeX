@@ -1,0 +1,24 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=10mm]{geometry}
+\usepackage{prototex}
+\pagestyle{empty}
+\ProtoDeclareResource{mana}{Mana}{blue!65!black}{M}
+\ProtoDeclareResource{energy}{Énergie}{orange!80!black}{E}
+\ProtoSetup{width=63,height=88,rows=12,padding=3,band-color=blue!65!black}
+\ProtoLayout{title-row=2,image-from=3,image-to=8,description-from=9,description-to=11,number-row=12}
+\begin{document}
+\noindent\ProtoCard[title={Sentinelle},image={example-image-a},number={001},
+ description={},overlay={
+ \ProtoPanel[from=9,to=11,width=54,fill=white,draw=blue!70!black,font=\footnotesize]{%
+   \ProtoAbility{Activation}{Payez \mana*{2} pour piocher une carte.}%
+   \ProtoFlavor{La connaissance a un prix.}%
+ }
+}]
+\hspace{3mm}
+\ProtoCard[title={Réacteur},image={example-image-b},number={002},description={},overlay={
+ \ProtoPanel[from=9,to=11,width=54,fill=white,font=\footnotesize]{%
+   \ProtoAbility{Effet}{Produisez \energy*{3} chaque tour.}%
+   \ProtoFlavor{Le coeur de la station pulse.}%
+ }
+}]
+\end{document}

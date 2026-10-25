@@ -1,0 +1,176 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{prototex}[2026/10/25 v0.1 Card layout prototype]
+\RequirePackage{tikz}
+\RequirePackage{graphicx}
+\RequirePackage{xparse}
+\RequirePackage{prototex-resources}
+\makeatletter
+% Lengths are expressed in millimetres, rows count from top (1-based).
+\newcommand\ProtoSetup[1]{\pgfkeys{/prototex/setup/.cd,#1}}
+\newcommand\ProtoLayout[1]{\pgfkeys{/prototex/layout/.cd,#1}}
+\newcommand\ProtoCard[1][]{%
+  \begingroup
+  \pgfkeys{/prototex/card/.cd,title={},image={},image-position=center,description={},number={},overlay={},#1}%
+  \ProtoRenderCard
+  \endgroup
+}
+\pgfkeys{/prototex/setup/.is family,/prototex/setup,
+  width/.store in=\pt@width,width=63,
+  height/.store in=\pt@height,height=88,
+  rows/.store in=\pt@rows,rows=12,
+  padding/.store in=\pt@padding,padding=3,
+  band-color/.store in=\pt@bandcolor,band-color=black!65,
+  border-color/.store in=\pt@bordercolor,border-color=black,
+  corner-radius/.store in=\pt@cornerradius,corner-radius=2,
+  paper-color/.store in=\pt@papercolor,paper-color=white,
+}
+\pgfkeys{/prototex/layout/.is family,/prototex/layout,
+  title-row/.store in=\pt@titlerow,title-row=2,
+  title-align/.store in=\pt@titlealign,title-align=center,
+  image-from/.store in=\pt@imagefrom,image-from=4,
+  image-to/.store in=\pt@imageto,image-to=7,
+  description-from/.store in=\pt@descfrom,description-from=9,
+  description-to/.store in=\pt@descto,description-to=10,
+  description-align/.store in=\pt@descalign,description-align=left,
+  number-row/.store in=\pt@numberrow,number-row=12,
+  number-align/.store in=\pt@numberalign,number-align=right,
+}
+\pgfkeys{/prototex/card/.is family,/prototex/card,
+  title/.store in=\pt@title,
+  image/.store in=\pt@image,
+  image-position/.is choice,
+  image-position/top/.code={\def\pt@imageposition{top}},
+  image-position/center/.code={\def\pt@imageposition{center}},
+  image-position/bottom/.code={\def\pt@imageposition{bottom}},
+  description/.store in=\pt@description,
+  number/.store in=\pt@number,
+  overlay/.store in=\pt@overlay,
+}
+\ProtoSetup{}
+\ProtoLayout{}
+% Coordinate helpers: the origin is at the top left; positive y goes down.
+\newcommand\pt@rowcenter[1]{((#1)-0.5)*\pt@height/\pt@rows}
+\newcommand\pt@rowtop[1]{((#1)-1)*\pt@height/\pt@rows}
+\newcommand\pt@rowbottom[1]{(#1)*\pt@height/\pt@rows}
+\newcommand\pt@align[1]{%
+  \def\pt@anchor{center}%
+  \def\pt@x{\pt@width/2}%
+  \edef\pt@asked{#1}%
+  \def\pt@left{left}\def\pt@right{right}%
+  \ifx\pt@asked\pt@left
+    \def\pt@anchor{west}\def\pt@x{\pt@padding}%
+  \else\ifx\pt@asked\pt@right
+    \def\pt@anchor{east}\def\pt@x{\pt@width-\pt@padding}%
+  \fi\fi
+}
+
+% Reusable foreground zones, drawn in virtual row coordinates.
+\pgfkeys{/prototex/panel/.is family,/prototex/panel,
+  from/.store in=\pt@pfrom,from=1,
+  to/.store in=\pt@pto,to=1,
+  align/.store in=\pt@palign,align=center,
+  width/.store in=\pt@pwidth,width=40,
+  fill/.store in=\pt@pfill,fill=white,
+  draw/.store in=\pt@pdraw,draw=black,
+  text-color/.store in=\pt@ptextcolor,text-color=black,
+  font/.store in=\pt@pfont,font=\footnotesize,
+  inset/.store in=\pt@pinset,inset=1.5,
+}
+\NewDocumentCommand{\ProtoPanel}{O{} +m}{%
+  \begingroup
+  \pgfkeys{/prototex/panel/.cd,#1}%
+  \pgfmathsetmacro\pt@pytop{\pt@rowtop{\pt@pfrom}}%
+  \pgfmathsetmacro\pt@pybottom{\pt@rowbottom{\pt@pto}}%
+  \pgfmathsetmacro\pt@pxleft{(\pt@width-\pt@pwidth)/2}%
+  \edef\pt@requested{\pt@palign}%
+  \def\pt@left{left}\def\pt@right{right}%
+  \ifx\pt@requested\pt@left
+    \pgfmathsetmacro\pt@pxleft{\pt@padding}%
+  \else\ifx\pt@requested\pt@right
+    \pgfmathsetmacro\pt@pxleft{\pt@width-\pt@padding-\pt@pwidth}%
+  \fi\fi
+  \pgfmathsetmacro\pt@pxright{\pt@pxleft+\pt@pwidth}%
+  \path[draw=\pt@pdraw,fill=\pt@pfill,rounded corners=0.8mm]
+    (\pt@pxleft,\pt@pytop) rectangle (\pt@pxright,\pt@pybottom);
+  \pgfmathsetmacro\pt@ptextwidth{\pt@pwidth-2*\pt@pinset}%
+  \node[anchor=center,inner sep=0,outer sep=0,align=center,
+        text width=\pt@ptextwidth mm,text=\pt@ptextcolor,
+        font=\pt@pfont] at ({(\pt@pxleft+\pt@pxright)/2},
+        {(\pt@pytop+\pt@pybottom)/2}) {#2};%
+  \endgroup
+}
+\pgfkeys{/prototex/band/.is family,/prototex/band,
+  row/.store in=\pt@brow,row=2,
+  fill/.store in=\pt@bfill,fill=black!70,
+  text-color/.store in=\pt@bcolor,text-color=white,
+  font/.store in=\pt@bfont,font=\bfseries\small,
+}
+\NewDocumentCommand{\ProtoBand}{O{} +m}{%
+  \begingroup
+  \pgfkeys{/prototex/band/.cd,#1}%
+  \fill[\pt@bfill] (0,{\pt@rowtop{\pt@brow}})
+    rectangle (\pt@width,{\pt@rowbottom{\pt@brow}});
+  \node[font=\pt@bfont,text=\pt@bcolor,inner sep=0,outer sep=0]
+    at ({\pt@width/2},{\pt@rowcenter{\pt@brow}}) {#2};%
+  \endgroup
+}
+
+\newcommand\ProtoRenderCard{%
+\begin{tikzpicture}[x=1mm,y=-1mm,baseline=(current bounding box.north)]
+  \path[use as bounding box] (0,0) rectangle (\pt@width,\pt@height);
+  % Clip artwork and overlays to the outer card silhouette.
+  \begin{scope}
+    \clip[rounded corners=\pt@cornerradius mm]
+      (0,0) rectangle (\pt@width,\pt@height);
+  \fill[\pt@papercolor] (0,0) rectangle (\pt@width,\pt@height);
+  \fill[\pt@bandcolor] (0,{\pt@rowtop{\pt@titlerow}}) rectangle (\pt@width,{\pt@rowbottom{\pt@titlerow}});
+  \pt@align{\pt@titlealign}
+  \node[anchor=\pt@anchor,inner sep=0,outer sep=0,text=white,font=\bfseries\small]
+    at ({\pt@x},{\pt@rowcenter{\pt@titlerow}}) {\pt@title};
+  % Image cover: keep aspect ratio and clip any excess (no distortion).
+  \pgfmathsetmacro\pt@imgtop{\pt@rowtop{\pt@imagefrom}}
+  \pgfmathsetmacro\pt@imgbottom{\pt@rowbottom{\pt@imageto}}
+  \pgfmathsetmacro\pt@imgheight{\pt@imgbottom-\pt@imgtop}
+  \pgfmathsetmacro\pt@imgwidth{\pt@width-2*\pt@padding}
+  % The image is horizontally centred; choose its vertical anchor for cropping.
+  \def\pt@imganchor{center}%
+  \pgfmathsetmacro\pt@imgy{(\pt@imgtop+\pt@imgbottom)/2}%
+  \def\pt@top{top}\def\pt@bottom{bottom}%
+  \ifx\pt@imageposition\pt@top
+    \def\pt@imganchor{north}%
+    \pgfmathsetmacro\pt@imgy{\pt@imgtop}%
+  \else\ifx\pt@imageposition\pt@bottom
+    \def\pt@imganchor{south}%
+    \pgfmathsetmacro\pt@imgy{\pt@imgbottom}%
+  \fi\fi
+  \begin{scope}
+    \clip (\pt@padding,\pt@imgtop) rectangle ({\pt@width-\pt@padding},\pt@imgbottom);
+    \ifx\pt@image\@empty\else
+      % Fit the width first; if too short, fit the height instead.
+      \setbox\z@=\hbox{\includegraphics[width=\pt@imgwidth mm]{\pt@image}}%
+      \ifdim\ht\z@<\dimexpr\pt@imgheight mm\relax
+        \node[anchor=\pt@imganchor,inner sep=0,outer sep=0] at ({\pt@width/2},{\pt@imgy})
+          {\includegraphics[height=\pt@imgheight mm]{\pt@image}};
+      \else
+        \node[anchor=\pt@imganchor,inner sep=0,outer sep=0] at ({\pt@width/2},{\pt@imgy})
+          {\box\z@};
+      \fi
+    \fi
+  \end{scope}
+  \draw[black!35] (\pt@padding,\pt@imgtop) rectangle ({\pt@width-\pt@padding},\pt@imgbottom);
+  \pt@align{\pt@descalign}
+  \pgfmathsetmacro\pt@textwidth{\pt@width-2*\pt@padding}
+  \node[anchor=north west,inner sep=0,outer sep=0,text width=\pt@textwidth mm,
+        font=\footnotesize,align=\pt@descalign]
+    at (\pt@padding,{\pt@rowtop{\pt@descfrom}}) {\pt@description};
+  \pt@align{\pt@numberalign}
+  \node[anchor=\pt@anchor,inner sep=0,outer sep=0,font=\scriptsize]
+    at ({\pt@x},{\pt@rowcenter{\pt@numberrow}}) {\pt@number};
+  \pt@overlay
+  \end{scope}
+  % Keep the outer border outside the clipping scope.
+  \draw[\pt@bordercolor,line width=0.35mm,rounded corners=\pt@cornerradius mm]
+    (0,0) rectangle (\pt@width,\pt@height);
+\end{tikzpicture}%
+}
+\makeatother

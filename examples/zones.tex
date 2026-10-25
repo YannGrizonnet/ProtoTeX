@@ -1,0 +1,31 @@
+\documentclass[a4paper]{article}
+\usepackage[margin=10mm]{geometry}
+\usepackage{prototex}
+\pagestyle{empty}
+\begin{document}
+\ProtoSetup{width=63,height=88,rows=12,padding=3,band-color=blue!60!black}
+\ProtoLayout{title-row=2,image-from=3,image-to=8,
+ description-from=9,description-to=11,number-row=12}
+\noindent\ProtoCard[
+  title={Garde du Nord},image={example-image-a},
+  description={Un personnage de demonstration.},number={01},
+  overlay={
+    \ProtoBand[row=7,fill=teal!75!black]{DEFENSEUR}
+    \ProtoPanel[from=3,to=4,align=right,width=15,fill=orange!85!white,
+      font=\bfseries\Large]{5}
+    \ProtoPanel[from=10,to=11,align=center,width=50,fill=white!95!yellow,
+      font=\footnotesize]{\textbf{Protection}\par Reduisez les degats de 1.}
+  }
+]
+\hspace{4mm}
+\ProtoCard[
+  title={Entrepot orbital},image={example-image-b},
+  description={Carte de test.},number={02},
+  overlay={
+    \ProtoBand[row=7,fill=purple!65!black]{STRUCTURE}
+    \ProtoPanel[from=3,to=4,align=left,width=15,fill=cyan!35]{3}
+    \ProtoPanel[from=10,to=11,width=50,fill=white,
+      font=\footnotesize]{\textbf{Activation}\par Piochez une carte.}
+  }
+]
+\end{document}
