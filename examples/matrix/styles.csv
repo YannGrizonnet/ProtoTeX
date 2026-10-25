@@ -1,0 +1,17 @@
+attribute;value;component;operation;property;result;priority
+rarity;commune;title;set;fill;gray!70!black;10
+rarity;rare;title;set;fill;blue!65!black;10
+rarity;legendaire;title;set;fill;orange!80!black;10
+rarity;commune;number;set;prefix;C;10
+rarity;rare;number;set;prefix;R;10
+rarity;legendaire;number;set;prefix;L;10
+rarity;legendaire;rarity;set;symbol;*;10
+rarity;rare;rarity;set;symbol;R;10
+rarity;commune;rarity;set;symbol;C;10
+faction;nord;title-icons;append;symbol;N;10
+faction;sud;title-icons;append;symbol;S;10
+keywords;fortifie;title-icons;append;symbol;+;20
+category;personnage;attack;show;visible;true;10
+category;batiment;attack;hide;visible;false;10
+category;personnage;layout;set;orientation;portrait;10
+category;batiment;layout;set;orientation;landscape;10
