@@ -1,0 +1,31 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{prototex-resources}[2026/10/25 v0.3 Semantic resources and ability text]
+\RequirePackage{tikz}
+\RequirePackage{xparse}
+\makeatletter
+% Four forms: \mana, \mana{5}, \mana*, \mana*{5}.
+% Each resource has a printable label, an accent color, and a glyph.
+\NewDocumentCommand{\ProtoDeclareResource}{m m m m}{%
+  \expandafter\def\csname pt@label@#1\endcsname{#2}%
+  \expandafter\def\csname pt@color@#1\endcsname{#3}%
+  \expandafter\def\csname pt@glyph@#1\endcsname{#4}%
+  \expandafter\NewDocumentCommand\csname #1\endcsname{s g}{%
+    \IfBooleanTF{##1}{\ProtoResourceIcon{#1}\IfNoValueF{##2}{\nobreak\,##2}}%
+      {\textbf{\IfNoValueF{##2}{##2~}\csname pt@label@#1\endcsname}}%
+  }%
+}
+\NewDocumentCommand{\ProtoResourceIcon}{m}{%
+  \tikz[baseline=-0.65ex]{\node[circle,draw=\csname pt@color@#1\endcsname,
+    fill=\csname pt@color@#1\endcsname!18,
+    line width=.35pt,minimum size=3.4mm,
+    inner sep=.25pt,font=\sffamily\bfseries\tiny,
+    text=\csname pt@color@#1\endcsname]
+    {\csname pt@glyph@#1\endcsname};}%
+}
+\NewDocumentCommand{\ProtoAbility}{m +m}{%
+  \par\noindent\textbf{#1}\par\noindent #2\par
+}
+\NewDocumentCommand{\ProtoFlavor}{+m}{%
+  \par\noindent{\itshape #1}\par
+}
+\makeatother
