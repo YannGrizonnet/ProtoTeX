@@ -64,16 +64,26 @@
   \pt@align{\pt@titlealign}
   \node[anchor=\pt@anchor,inner sep=0,outer sep=0,text=white,font=\bfseries\small]
     at ({\pt@x},{\pt@rowcenter{\pt@titlerow}}) {\pt@title};
-  % Illustration zone: fixed frame, with centred, aspect-ratio-preserving image.
+  % Image cover: keep aspect ratio and clip any excess (no distortion).
   \pgfmathsetmacro\pt@imgtop{\pt@rowtop{\pt@imagefrom}}
   \pgfmathsetmacro\pt@imgbottom{\pt@rowbottom{\pt@imageto}}
-  \pgfmathsetmacro\pt@imgheight{\pt@imgbottom-\pt@imgtop-2}
-  \pgfmathsetmacro\pt@imgwidth{\pt@width-2*\pt@padding-2}
+  \pgfmathsetmacro\pt@imgheight{\pt@imgbottom-\pt@imgtop}
+  \pgfmathsetmacro\pt@imgwidth{\pt@width-2*\pt@padding}
+  \begin{scope}
+    \clip (\pt@padding,\pt@imgtop) rectangle ({\pt@width-\pt@padding},\pt@imgbottom);
+    \ifx\pt@image\@empty\else
+      % Fit the width first; if too short, fit the height instead.
+      \setbox\z@=\hbox{\includegraphics[width=\pt@imgwidth mm]{\pt@image}}%
+      \ifdim\ht\z@<\dimexpr\pt@imgheight mm\relax
+        \node[inner sep=0,outer sep=0] at ({\pt@width/2},{(\pt@imgtop+\pt@imgbottom)/2})
+          {\includegraphics[height=\pt@imgheight mm]{\pt@image}};
+      \else
+        \node[inner sep=0,outer sep=0] at ({\pt@width/2},{(\pt@imgtop+\pt@imgbottom)/2})
+          {\box\z@};
+      \fi
+    \fi
+  \end{scope}
   \draw[black!35] (\pt@padding,\pt@imgtop) rectangle ({\pt@width-\pt@padding},\pt@imgbottom);
-  \ifx\pt@image\@empty\else
-    \node[inner sep=0,outer sep=0] at ({\pt@width/2},{(\pt@imgtop+\pt@imgbottom)/2})
-      {\includegraphics[width=\pt@imgwidth mm,height=\pt@imgheight mm,keepaspectratio]{\pt@image}};
-  \fi
   \pt@align{\pt@descalign}
   \pgfmathsetmacro\pt@textwidth{\pt@width-2*\pt@padding}
   \node[anchor=north west,inner sep=0,outer sep=0,text width=\pt@textwidth mm,
