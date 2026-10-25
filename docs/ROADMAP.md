@@ -1,19 +1,27 @@
 # ProtoTeX — Feuille de route
 
-## Version 0.1
+## Jalon 0.1 — Noyau de cartes (en cours de validation)
+- [x] Définir dimensions et grille virtuelle.
+- [x] Afficher titre, illustration, description et numéro.
+- [x] Recadrage cover des images, avec position top / center / bottom.
+- [x] Compiler un premier exemple.
+- [ ] Validation finale avant fusion dans main.
 
-- [ ] Définir une carte aux dimensions configurables.
-- [ ] Positionner titre, illustration, texte et numéro via une grille de lignes virtuelles.
-- [ ] Gérer les alignements gauche, centre et droite.
-- [ ] Séparer contenu, disposition et thème.
-- [ ] Produire une carte PDF avec LaTeX et TikZ.
+## Jalon 0.2 — Zones et superpositions (expérimental)
+- [x] Bandeaux graphiques.
+- [x] Cartouches positionnés sur des plages de lignes.
+- [x] Superposition via la propriété overlay.
 
-## Version 0.2
+## Jalon 0.3 — Ressources et texte enrichi (expérimental)
+- [x] Déclarer des ressources sémantiques avec icône simple et valeur.
+- [x] Gérer les quatre formes texte/icône avec argument facultatif.
+- [x] Ajouter des blocs de capacité et de texte d'ambiance.
+- [x] Fournir un exemple compilable.
+- [ ] Développer ultérieurement des pictogrammes personnalisables plus élaborés.
 
-- [ ] Importer les données depuis un fichier CSV.
-- [ ] Générer des cartes en série à partir d'un même modèle.
-- [ ] Disposer automatiquement les cartes sur des planches imprimables.
+## Suite envisagée
+- Import CSV avec mapping configurable des champs.
+- Planches d'impression et nombre d'exemplaires.
+- Traitement des textes trop longs et validation des zones.
 
-## Principes
-
-Le projet sert d'abord un usage personnel sous Linux avec Texmaker, LibreOffice Calc, LaTeX, TikZ et CSV. Une application ProtoTeX Studio pourra être envisagée plus tard, sans retarder le moteur.
+La priorité reste l'usage personnel sous Linux avec LaTeX, TikZ et CSV. ProtoTeX Studio demeure hors périmètre.
