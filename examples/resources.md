@@ -17,7 +17,7 @@ La déclaration crée une commande `\mana` avec quatre variantes :
 | `\mana` | **Mana** |
 | `\mana{5}` | **5 Mana** |
 | `\mana*` | Icône ronde portant le glyphe M |
-| `\mana*{5}` | Icône ronde M suivie de 5 |
+| `\mana*{5}` | **5** suivi de l'icône ronde M |
 
 Le dernier argument de la déclaration est un glyphe arbitraire (lettre ou symbole LaTeX), pas une image imposée. Le thème pourra lui substituer un véritable pictogramme dans une prochaine évolution.
 
