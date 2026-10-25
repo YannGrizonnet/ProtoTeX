@@ -1,7 +1,5 @@
 # ProtoTeX
 
-**L'art du prototypage.**
-
 ProtoTeX est un projet de package LaTeX pour créer et imprimer des prototypes de cartes de jeux de société.
 
 > **État du projet :** préparation de la version 0.1. Le moteur LaTeX n'est pas encore implémenté.
