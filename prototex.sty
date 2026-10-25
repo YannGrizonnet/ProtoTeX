@@ -9,7 +9,7 @@
 \newcommand\ProtoLayout[1]{\pgfkeys{/prototex/layout/.cd,#1}}
 \newcommand\ProtoCard[1][]{%
   \begingroup
-  \pgfkeys{/prototex/card/.cd,title={},image={},description={},number={},#1}%
+  \pgfkeys{/prototex/card/.cd,title={},image={},image-position=center,description={},number={},#1}%
   \ProtoRenderCard
   \endgroup
 }
@@ -36,6 +36,10 @@
 \pgfkeys{/prototex/card/.is family,/prototex/card,
   title/.store in=\pt@title,
   image/.store in=\pt@image,
+  image-position/.is choice,
+  image-position/top/.code={\def\pt@imageposition{top}},
+  image-position/center/.code={\def\pt@imageposition{center}},
+  image-position/bottom/.code={\def\pt@imageposition{bottom}},
   description/.store in=\pt@description,
   number/.store in=\pt@number,
 }
@@ -69,16 +73,27 @@
   \pgfmathsetmacro\pt@imgbottom{\pt@rowbottom{\pt@imageto}}
   \pgfmathsetmacro\pt@imgheight{\pt@imgbottom-\pt@imgtop}
   \pgfmathsetmacro\pt@imgwidth{\pt@width-2*\pt@padding}
+  % The image is horizontally centred; choose its vertical anchor for cropping.
+  \def\pt@imganchor{center}%
+  \pgfmathsetmacro\pt@imgy{(\pt@imgtop+\pt@imgbottom)/2}%
+  \def\pt@top{top}\def\pt@bottom{bottom}%
+  \ifx\pt@imageposition\pt@top
+    \def\pt@imganchor{north}%
+    \pgfmathsetmacro\pt@imgy{\pt@imgtop}%
+  \else\ifx\pt@imageposition\pt@bottom
+    \def\pt@imganchor{south}%
+    \pgfmathsetmacro\pt@imgy{\pt@imgbottom}%
+  \fi\fi
   \begin{scope}
     \clip (\pt@padding,\pt@imgtop) rectangle ({\pt@width-\pt@padding},\pt@imgbottom);
     \ifx\pt@image\@empty\else
       % Fit the width first; if too short, fit the height instead.
       \setbox\z@=\hbox{\includegraphics[width=\pt@imgwidth mm]{\pt@image}}%
       \ifdim\ht\z@<\dimexpr\pt@imgheight mm\relax
-        \node[inner sep=0,outer sep=0] at ({\pt@width/2},{(\pt@imgtop+\pt@imgbottom)/2})
+        \node[anchor=\pt@imganchor,inner sep=0,outer sep=0] at ({\pt@width/2},{\pt@imgy})
           {\includegraphics[height=\pt@imgheight mm]{\pt@image}};
       \else
-        \node[inner sep=0,outer sep=0] at ({\pt@width/2},{(\pt@imgtop+\pt@imgbottom)/2})
+        \node[anchor=\pt@imganchor,inner sep=0,outer sep=0] at ({\pt@width/2},{\pt@imgy})
           {\box\z@};
       \fi
     \fi
