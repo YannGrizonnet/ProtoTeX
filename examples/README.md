@@ -20,6 +20,6 @@ La numérotation des lignes commence à **1 en haut de la carte**. Les alignemen
 
 - Les champs de texte ne sont pas automatiquement ajustés : un texte trop long peut déborder.
 - L'alignement `description-align` gère l'alignement du texte mais pas encore la position globale de son bloc.
-- Les images conservent leur ratio et sont contenues dans la zone sans recadrage.
+- Les images remplissent toute la zone sans déformation : elles sont agrandies proportionnellement puis recadrées au centre (comportement « cover »).
 - Pas encore d'import CSV, de génération de planches ou d'icônes sémantiques.
 - Les paramètres de mise en page ne sont pas encore validés (plages de lignes, dimensions positives).
