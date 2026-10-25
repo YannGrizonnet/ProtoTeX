@@ -9,7 +9,7 @@
 \newcommand\ProtoLayout[1]{\pgfkeys{/prototex/layout/.cd,#1}}
 \newcommand\ProtoCard[1][]{%
   \begingroup
-  \pgfkeys{/prototex/card/.cd,title={},image={},image-position=center,description={},number={},#1}%
+  \pgfkeys{/prototex/card/.cd,title={},image={},image-position=center,description={},number={},overlay={},#1}%
   \ProtoRenderCard
   \endgroup
 }
@@ -42,6 +42,7 @@
   image-position/bottom/.code={\def\pt@imageposition{bottom}},
   description/.store in=\pt@description,
   number/.store in=\pt@number,
+  overlay/.store in=\pt@overlay,
 }
 \ProtoSetup{}
 \ProtoLayout{}
@@ -60,6 +61,58 @@
     \def\pt@anchor{east}\def\pt@x{\pt@width-\pt@padding}%
   \fi\fi
 }
+
+% Reusable foreground zones, drawn in virtual row coordinates.
+\pgfkeys{/prototex/panel/.is family,/prototex/panel,
+  from/.store in=\pt@pfrom,from=1,
+  to/.store in=\pt@pto,to=1,
+  align/.store in=\pt@palign,align=center,
+  width/.store in=\pt@pwidth,width=40,
+  fill/.store in=\pt@pfill,fill=white,
+  draw/.store in=\pt@pdraw,draw=black,
+  text-color/.store in=\pt@ptextcolor,text-color=black,
+  font/.store in=\pt@pfont,font=\footnotesize,
+  inset/.store in=\pt@pinset,inset=1.5,
+}
+\NewDocumentCommand{\ProtoPanel}{O{} +m}{%
+  \begingroup
+  \pgfkeys{/prototex/panel/.cd,#1}%
+  \pgfmathsetmacro\pt@pytop{\pt@rowtop{\pt@pfrom}}%
+  \pgfmathsetmacro\pt@pybottom{\pt@rowbottom{\pt@pto}}%
+  \pgfmathsetmacro\pt@pxleft{(\pt@width-\pt@pwidth)/2}%
+  \edef\pt@requested{\pt@palign}%
+  \def\pt@left{left}\def\pt@right{right}%
+  \ifx\pt@requested\pt@left
+    \pgfmathsetmacro\pt@pxleft{\pt@padding}%
+  \else\ifx\pt@requested\pt@right
+    \pgfmathsetmacro\pt@pxleft{\pt@width-\pt@padding-\pt@pwidth}%
+  \fi\fi
+  \pgfmathsetmacro\pt@pxright{\pt@pxleft+\pt@pwidth}%
+  \path[draw=\pt@pdraw,fill=\pt@pfill,rounded corners=0.8mm]
+    (\pt@pxleft,\pt@pytop) rectangle (\pt@pxright,\pt@pybottom);
+  \pgfmathsetmacro\pt@ptextwidth{\pt@pwidth-2*\pt@pinset}%
+  \node[anchor=center,inner sep=0,outer sep=0,align=center,
+        text width=\pt@ptextwidth mm,text=\pt@ptextcolor,
+        font=\pt@pfont] at ({(\pt@pxleft+\pt@pxright)/2},
+        {(\pt@pytop+\pt@pybottom)/2}) {#2};%
+  \endgroup
+}
+\pgfkeys{/prototex/band/.is family,/prototex/band,
+  row/.store in=\pt@brow,row=2,
+  fill/.store in=\pt@bfill,fill=black!70,
+  text-color/.store in=\pt@bcolor,text-color=white,
+  font/.store in=\pt@bfont,font=\bfseries\small,
+}
+\NewDocumentCommand{\ProtoBand}{O{} +m}{%
+  \begingroup
+  \pgfkeys{/prototex/band/.cd,#1}%
+  \fill[\pt@bfill] (0,{\pt@rowtop{\pt@brow}})
+    rectangle (\pt@width,{\pt@rowbottom{\pt@brow}});
+  \node[font=\pt@bfont,text=\pt@bcolor,inner sep=0,outer sep=0]
+    at ({\pt@width/2},{\pt@rowcenter{\pt@brow}}) {#2};%
+  \endgroup
+}
+
 \newcommand\ProtoRenderCard{%
 \begin{tikzpicture}[x=1mm,y=-1mm,baseline=(current bounding box.north)]
   \path[use as bounding box] (0,0) rectangle (\pt@width,\pt@height);
@@ -107,6 +160,7 @@
   \pt@align{\pt@numberalign}
   \node[anchor=\pt@anchor,inner sep=0,outer sep=0,font=\scriptsize]
     at ({\pt@x},{\pt@rowcenter{\pt@numberrow}}) {\pt@number};
+  \pt@overlay
   \draw[\pt@bordercolor,line width=0.35mm,rounded corners=2mm]
     (0,0) rectangle (\pt@width,\pt@height);
 \end{tikzpicture}%
