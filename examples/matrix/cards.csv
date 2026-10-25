@@ -1,0 +1,5 @@
+id;title;category;rarity;faction;keywords;image;attack;defense;description
+12;Sentinelle du Nord;personnage;rare;nord;fortifie;example-image-a;3;5;Tient la ligne face aux assauts.
+13;Garde du Sud;personnage;commune;sud;;example-image-b;2;3;Protege les voyageurs.
+14;Bastion du Nord;batiment;legendaire;nord;fortifie;example-image-c;;7;Une muraille imprenable.
+15;Tour du Sud;batiment;rare;sud;;example-image-a;;4;Observe les environs.
