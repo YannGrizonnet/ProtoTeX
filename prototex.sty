@@ -21,6 +21,7 @@
   padding/.store in=\pt@padding,padding=3,
   band-color/.store in=\pt@bandcolor,band-color=black!65,
   border-color/.store in=\pt@bordercolor,border-color=black,
+  corner-radius/.store in=\pt@cornerradius,corner-radius=2,
   paper-color/.store in=\pt@papercolor,paper-color=white,
 }
 \pgfkeys{/prototex/layout/.is family,/prototex/layout,
@@ -117,6 +118,10 @@
 \newcommand\ProtoRenderCard{%
 \begin{tikzpicture}[x=1mm,y=-1mm,baseline=(current bounding box.north)]
   \path[use as bounding box] (0,0) rectangle (\pt@width,\pt@height);
+  % Clip artwork and overlays to the outer card silhouette.
+  \begin{scope}
+    \clip[rounded corners=\pt@cornerradius mm]
+      (0,0) rectangle (\pt@width,\pt@height);
   \fill[\pt@papercolor] (0,0) rectangle (\pt@width,\pt@height);
   \fill[\pt@bandcolor] (0,{\pt@rowtop{\pt@titlerow}}) rectangle (\pt@width,{\pt@rowbottom{\pt@titlerow}});
   \pt@align{\pt@titlealign}
@@ -162,7 +167,9 @@
   \node[anchor=\pt@anchor,inner sep=0,outer sep=0,font=\scriptsize]
     at ({\pt@x},{\pt@rowcenter{\pt@numberrow}}) {\pt@number};
   \pt@overlay
-  \draw[\pt@bordercolor,line width=0.35mm,rounded corners=2mm]
+  \end{scope}
+  % Keep the outer border outside the clipping scope.
+  \draw[\pt@bordercolor,line width=0.35mm,rounded corners=\pt@cornerradius mm]
     (0,0) rectangle (\pt@width,\pt@height);
 \end{tikzpicture}%
 }
